@@ -3,14 +3,15 @@
 ## First Iteration
 
 1. Take a slightly different approach to Java wrapping than what
-   [clj-sockets]() and [async-sockets]() have done:
+   [clj-sockets](https://github.com/atroche/clj-sockets) and
+   [async-sockets](https://github.com/bguthrie/async-sockets) have done:
    * Follow the Java class taxonomy closely for low-level protocols
       and implementations
    * Provide a higher-level, more deveoloper-facing (developer-friendly)
       API
    * Take inspiration from:
-      * [pyr's mesos Java-wrapper library]()
-      * [clojang jiface Java-wrapper library]()
+      * [pyr's mesos Java-wrapper library](https://github.com/pyr/mesomatic)
+      * [clojang jiface Java-wrapper library](https://github.com/clojang/jiface)
 1. Support both TCP and UDP sockets
    * Other libraries have focused on supporting TCP primarily
    * We have a need for UDP servers
@@ -35,6 +36,9 @@
    * A UDP socket server
    * A UDP socket client
    * See [Writing a Datagram Client and Server](https://docs.oracle.com/javase/tutorial/networking/datagrams/clientServer.html)
+     * [Server code](https://docs.oracle.com/javase/tutorial/displayCode.html?code=https://docs.oracle.com/javase/tutorial/networking/datagrams/examples/QuoteServer.java)
+     * [Server thread code](https://docs.oracle.com/javase/tutorial/displayCode.html?code=https://docs.oracle.com/javase/tutorial/networking/datagrams/examples/QuoteServerThread.java)
+     * [Client code](https://docs.oracle.com/javase/tutorial/displayCode.html?code=https://docs.oracle.com/javase/tutorial/networking/datagrams/examples/QuoteClient.java)
 1. Sketch out how this would be matched in Clojure
 1. Wrap the necessary Java classes
 1. Provide a working example in Clojure of client and server
@@ -44,6 +48,27 @@
    * Provide a new example that's simpler to use than the example that is a
      straight translation of the Java example
 1. Introduce command channels with `core.async`
+
+### Clojure Sketch
+
+**A pre-implementation imagining of creating UDP servers and clients**
+
+```clj
+(ns socket-server
+  (:require
+    [systems.billo.datagram.socket :as socket]
+    [systems.billo.datagram.packet :as packet]))
+
+(let [skt (socket/create 4445)]
+
+  ...
+  (let [pkt (socket/receive skt)
+        remote-address (packet/address pkt)
+        remote-port (packet/port pkt)
+        pkt (packet/new buf (.lenth buf) remote-address remote-port)]
+    (socket/send skt pkt)))
+
+```
 
 ## Second Iteration
 
