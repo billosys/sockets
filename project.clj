@@ -28,7 +28,8 @@
         [org.clojure/tools.namespace "0.2.11"]]
       :source-paths [
         "dev-resources/src"
-        "test"]
+        "test"
+        "examples/src"]
       :repl-options {
         :init-ns sockets.dev
         :prompt (fn [ns] (str "\u001B[35m[\u001B[34m"
