@@ -1,6 +1,6 @@
-(ns systems.billo.test.datagram.core
+(ns systems.billo.test.datagram.socket
   (:require [clojure.test :refer :all]
-            [systems.billo.datagram.core :as datagram]))
+            [systems.billo.datagram.socket :as socket]))
 
 (deftest a-test
   (testing "Placeholder ..."
