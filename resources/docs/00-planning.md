@@ -12,6 +12,7 @@
    * Take inspiration from:
       * [pyr's mesos Java-wrapper library](https://github.com/pyr/mesomatic)
       * [clojang jiface Java-wrapper library](https://github.com/clojang/jiface)
+      * [bjorstrom's inet-address library](https://github.com/billosys/inet-address)
 1. Support both TCP and UDP sockets
    * Other libraries have focused on supporting TCP primarily
    * We have a need for UDP servers
