@@ -40,6 +40,10 @@
      * [Server thread code](https://docs.oracle.com/javase/tutorial/displayCode.html?code=https://docs.oracle.com/javase/tutorial/networking/datagrams/examples/QuoteServerThread.java)
      * [Client code](https://docs.oracle.com/javase/tutorial/displayCode.html?code=https://docs.oracle.com/javase/tutorial/networking/datagrams/examples/QuoteClient.java)
 1. Sketch out how this would be matched in Clojure
+   * Check out these:
+     * [Echo server with core.async](https://gist.github.com/cqfd/41f391e1be258d2bfa97)
+     * [async-sockets socket servers](https://github.com/bguthrie/async-sockets/blob/master/src/com/gearswithingears/async_sockets.clj)
+     * [core.async talk](https://github.com/halgari/clojure-conj-2013-core.async-examples/blob/master/src/clojure_conj_talk/core.clj) - see the section of code titled "Limited Access to a Shared Resource"
 1. Wrap the necessary Java classes
 1. Provide a working example in Clojure of client and server
 1. Update the example (or create a new one) that would show instead how this
