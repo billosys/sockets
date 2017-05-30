@@ -138,4 +138,4 @@
   ([arg]
     (new DatagramSocket arg))
   ([port local-addr]
-    (new DatagramSocket) port local-addr))
+    (new DatagramSocket port local-addr)))
