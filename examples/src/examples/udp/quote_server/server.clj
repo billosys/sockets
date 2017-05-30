@@ -36,7 +36,7 @@
     (async/go-loop []
       (let [msg (async/<! out)
             packet-text (str "Your quote:\n\n" (:quote msg))
-            packet-data (byte-array (map byte packet-text))
+            packet-data (common/str->bytes packet-text)
             packet (new DatagramPacket packet-data
                                        (count packet-data)
                                        (:remote-addr msg)

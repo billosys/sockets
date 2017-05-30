@@ -13,3 +13,11 @@
 (defn get-quote
   []
   (:out (shell/sh "fortune")))
+
+(defn str->bytes
+  [text]
+  (byte-array (map byte text)))
+
+(defn bytes->str
+  [data]
+  (new String data))
