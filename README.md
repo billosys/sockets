@@ -12,10 +12,63 @@
 * [API Reference Docs](http://billo.systems/sockets/current/index) - published using [Codox](https://github.com/weavejester/codox)
 
 
-## Usage
+## Examples
 
-FIXME
+### Running Them
 
+For running examples, be sure to look in the `examples` directory. The servers
+can be run with the following:
+
+```
+$ lein run -m examples.udp.echo-server.server
+```
+and
+```
+$ lein run -m examples.udp.quote-server.server
+```
+
+You can use `nc` (netcat) to connect to these:
+
+```
+$ nc -u localhost 15099
+```
+
+In addition, the quote server example has a client:
+
+```
+$ lein run -m examples.udp.quote-server.client
+```
+
+### Example Code
+
+The following was taken from the examples mentioned above.
+
+
+Creating a datagram socket:
+
+```clj
+(require '[sockets.datagram.socket :as socket])
+
+(def sock (socket/create))
+```
+
+Creating a datagram packet implicitly with `receive`:
+
+```clj
+(def pkt (socket/receive sock 256))
+```
+
+Using the update methods with a threading macro:
+
+```clj
+(require '[inet.address :as inet]
+         '[sockets.datagram.socket :as socket])
+
+(socket/send sock
+             (-> (packet/create 1)
+                 (packet/update-address (inet/create [127 0 0 1]))
+                 (packet/update-port port)))
+```
 
 ## License
 
