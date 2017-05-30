@@ -3,6 +3,12 @@
   (:import (java.net DatagramPacket)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;   Constants   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def DEFAULT_PACKET_SIZE 512)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Protocol   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -12,6 +18,9 @@
     or from which the datagram was received.")
   (data [this]
     "Returns the data buffer.")
+  (default-length [this]
+    "A Clojure method only available to the Clojure wrapper, returning the
+    default length a packet is created with when no length is given.")
   (length [this]
     "Returns the length of the data to be sent or the length of the data
     received.")
@@ -44,6 +53,7 @@
 (def behaviour
   {:address (fn [this] (.getAddress this))
    :data (fn [this] (.getData this))
+   :default-length (constantly DEFAULT_PACKET_SIZE)
    :length (fn [this] (.getLength this))
    :offset (fn [this] (.getOffset this))
    :port (fn [this] (.getPort this))
@@ -64,9 +74,12 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn create
-  "A constructor for datagram packets. This function my take 1, 2, 3, 4, or 5
-  args.
+  "A constructor for datagram packets. This function may take 0, 1, 2, 3, 4, or
+  5 args.
 
+  * 0-arity - This is a Clojure-only convenience constructor that creates a
+    `byte-array` of length `DEFAULT_PACKET_SIZE`, suitable for receiving
+    packets.
   * 1-arity - This is a Clojure-only convenience constructor that creates a
     `byte-array` of the desired length, suitable for receiving packets.
   * 2-arity - Constructs a `DatagramPacket` for receiving packets of length
@@ -84,6 +97,8 @@
   * 5-arity - Constructs a datagram packet for sending packets of length
     `len` with offset `offset` to the specified port `port` on the specified
     host (`InetAddress`) `addr`."
+  ([]
+    (new DatagramPacket (byte-array DEFAULT_PACKET_SIZE) DEFAULT_PACKET_SIZE))
   ([len]
     (new DatagramPacket (byte-array len) len))
   ([buf len]

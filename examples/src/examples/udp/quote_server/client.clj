@@ -22,9 +22,7 @@
 
 (defn get-response
   [sock]
-  (let [buf-len max-quote-size
-        pkt (packet/create buf-len)]
-    (socket/receive sock pkt)
+  (let [pkt (socket/receive sock common/max-packet-size)]
     (println (str "\n" (common/bytes->str (packet/data pkt))))))
 
 (defn -main

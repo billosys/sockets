@@ -17,12 +17,9 @@
 
 (defn packet-reader
   [sock]
-  (let [in (async/chan)
-        buf-len 4096
-        pkt (packet/create buf-len)]
+  (let [in (async/chan)]
     (async/go-loop []
-      (do
-        (socket/receive sock pkt)
+      (let [pkt (socket/receive sock common/max-packet-size)]
         (async/>! in {:remote-addr (packet/address pkt)
                       :remote-port (packet/port pkt)
                       :data (common/bytes->str (packet/data pkt))}))
