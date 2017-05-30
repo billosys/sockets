@@ -2873,9 +2873,9 @@ net.brehaut.ClojureTools = (function (SH) {
   (println x &quot;Hello, World!&quot;))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#sockets.datagram.packet" name="sockets.datagram.packet"><h1 class="project-name">sockets.datagram.packet</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(ns sockets.datagram.packet
   (:refer-clojure :exclude [bound? send])
-  (:import (java.net DatagramPacket)))</pre></td></tr><tr><td class="docs"><p>  Constants   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>></p>
+  (:import (java.net DatagramPacket)))</pre></td></tr><tr><td class="docs"><p>  Constants   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
 </td><td class="codes"></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(def DEFAULT_PACKET_SIZE 512)</pre></td></tr><tr><td class="docs"><p>  Protocol   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>></p>
+</td><td class="codes"><pre class="brush: clojure">(def DEFAULT_PACKET_SIZE 512)</pre></td></tr><tr><td class="docs"><p>  Protocol   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
 </td><td class="codes"></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defprotocol Packet
   (address [this]
@@ -2927,7 +2927,7 @@ net.brehaut.ClojureTools = (function (SH) {
   (update-socket-address [this]
     &quot;Sets the `SocketAddress` (usually IP address + port number) of the remote
     host to which this datagram is being sent, returning the updated packet.
-    This is provided as a convenience for use in Clojure threading macros.&quot;))</pre></td></tr><tr><td class="docs"><p>  Implementation   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>></p>
+    This is provided as a convenience for use in Clojure threading macros.&quot;))</pre></td></tr><tr><td class="docs"><p>  Implementation   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
 </td><td class="codes"></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(def behaviour
   {:address (fn [this] (.getAddress this))
@@ -2957,7 +2957,7 @@ net.brehaut.ClojureTools = (function (SH) {
    :update-socket-address (fn [this addr]
                              (.setSocketAddress this addr)
                              this)})</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(extend DatagramPacket Packet behaviour)</pre></td></tr><tr><td class="docs"><p>  Constructors   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>></p>
+</td><td class="codes"><pre class="brush: clojure">(extend DatagramPacket Packet behaviour)</pre></td></tr><tr><td class="docs"><p>  Constructors   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
 </td><td class="codes"></td></tr><tr><td class="docs"><p>A constructor for datagram packets. This function may take 0, 1, 2, 3, 4, or
   5 args.</p>
 
@@ -3002,7 +3002,7 @@ host (<code>InetAddress</code>) <code>addr</code>.</li>
   (:refer-clojure :exclude [bound? send])
   (:import
     (java.net DatagramPacket
-              DatagramSocket)))</pre></td></tr><tr><td class="docs"><p>  Protocol   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>></p>
+              DatagramSocket)))</pre></td></tr><tr><td class="docs"><p>  Protocol   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
 </td><td class="codes"></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defprotocol Socket
   (bind [this addr]
@@ -3077,7 +3077,7 @@ host (<code>InetAddress</code>) <code>addr</code>.</li>
     &quot;Enable/disable `SO_TIMEOUT` with the specified timeout, in milliseconds.&quot;)
   (traffic-class! [this class-int]
     &quot;Sets traffic class or type-of-service octet in the IP datagram header for
-    datagrams sent from this `DatagramSocket`.&quot;))</pre></td></tr><tr><td class="docs"><p>  Implementation   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>></p>
+    datagrams sent from this `DatagramSocket`.&quot;))</pre></td></tr><tr><td class="docs"><p>  Implementation   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
 </td><td class="codes"></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defmulti -receive
   (fn ([arg1 &amp; [arg2]]
@@ -3125,7 +3125,7 @@ host (<code>InetAddress</code>) <code>addr</code>.</li>
    :send-buffer-size! (fn [this size] (.setSendBufferSize this size))
    :so-timeout! (fn [this timeout] (.setSoTimeout this timeout))
    :traffic-class! (fn [this class-int] (.setTrafficClass this class-int))})</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(extend DatagramSocket Socket behaviour)</pre></td></tr><tr><td class="docs"><p>  Constructors   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>></p>
+</td><td class="codes"><pre class="brush: clojure">(extend DatagramSocket Socket behaviour)</pre></td></tr><tr><td class="docs"><p>  Constructors   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
 </td><td class="codes"></td></tr><tr><td class="docs"><p>A constructor for datagram sockets. This function my take 0, 1, or two args.</p>
 
 <ul>
