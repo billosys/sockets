@@ -7,10 +7,10 @@
 ### API Reference
 
 * [Development](../current)
-* [0.1.0](../0.1.0)
+* [0.1.0](../v0.1.0)
 
 
 ## Marginalia
 
 * [Development](../current/marginalia)
-* [0.1.0](../0.1.0/marginalia)
+* [0.1.0](../v0.1.0/marginalia)
