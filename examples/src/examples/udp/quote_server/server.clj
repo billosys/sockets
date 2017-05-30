@@ -2,7 +2,9 @@
   (:require
     [clojure.core.async :as async]
     [clojure.java.io :as io]
-    [examples.common :as common])
+    [examples.common :as common]
+    [inet.address :as inet]
+    [sockets.datagram.socket :as socket])
   (:import (java.net DatagramPacket
                      DatagramSocket)))
 
@@ -22,7 +24,7 @@
         packet (new DatagramPacket buf buf-len)]
     (async/go-loop []
       (do
-        (.receive sock packet)
+        (socket/receive sock packet)
         (async/>! in {:remote-addr (.getAddress packet)
                       :remote-port (.getPort packet)}))
       (recur))
@@ -39,7 +41,7 @@
                                        (count packet-data)
                                        (:remote-addr msg)
                                        (:remote-port msg))]
-        (.send sock packet))
+        (socket/send sock packet))
       (recur))
     out))
 
@@ -57,10 +59,10 @@
   Then type away, and enjoy the endless quotes ;-)"
   [& [port & args]]
   (println "Starting server ...")
-  (let [sock (new DatagramSocket (common/get-port port))]
+  (let [sock (socket/create (common/get-port port))]
     (println (format "Listening on udp://%s:%s ..."
-                     (.getHostAddress (.getLocalAddress sock))
-                     (.getLocalPort sock)))
+                     (inet/host-address (socket/local-address sock))
+                     (socket/local-port sock)))
     (async/go
       (quote-service
         (packet-reader sock)

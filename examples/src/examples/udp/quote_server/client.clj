@@ -3,7 +3,8 @@
     [clojure.core.async :as async]
     [clojure.java.io :as io]
     [examples.common :as common]
-    [inet.address :as inet])
+    [inet.address :as inet]
+    [sockets.datagram.socket :as socket])
   (:import (java.net DatagramPacket
                      DatagramSocket)))
 
@@ -23,7 +24,7 @@
   (let [buf-len 4096
         buf (byte-array buf-len)
         packet (new DatagramPacket buf buf-len)]
-    (.receive sock packet)
+    (socket/receive sock packet)
     (println (str "\n" (new String (.getData packet))))))
 
 (defn -main
@@ -34,9 +35,9 @@
   $ lein run -m examples.udp.quote-server.client
   ```
 
-  "
+  Your quote will appear on `stdout` and the client will exit."
   [& [port & args]]
-  (let [sock (new DatagramSocket)
+  (let [sock (socket/create)
         port (common/get-port port)]
     (println (format "Connecting to udp://127.0.0.1:%s ..." port))
     (send-request sock port)
