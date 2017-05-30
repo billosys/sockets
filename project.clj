@@ -16,6 +16,7 @@
       :plugins [
         [lein-codox "0.10.3"]
         [lein-marginalia "0.9.0"]]
+      :source-paths ^:replace ["src"]
       :codox {
         :project {:name "sockets"}
         :themes [:superhero]
