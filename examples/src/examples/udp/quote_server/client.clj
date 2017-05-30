@@ -25,7 +25,7 @@
         buf (byte-array buf-len)
         packet (new DatagramPacket buf buf-len)]
     (socket/receive sock packet)
-    (println (str "\n" (new String (.getData packet))))))
+    (println (str "\n" (common/bytes->str (.getData packet))))))
 
 (defn -main
   "Before running the client, make sure the UDP quote server is running.
