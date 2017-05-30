@@ -1,16 +1,9 @@
 (ns examples.tcp.echo-server.server
   (:require
     [clojure.core.async :as async]
-    [clojure.java.io :as io])
+    [clojure.java.io :as io]
+    [examples.common :as common])
   (:import (java.net ServerSocket)))
-
-(def default-port 15099)
-
-(defn get-port
-  [port]
-  (case port
-    nil default-port
-    (Integer/parseInt port)))
 
 (defn echo-service
   [in out]
@@ -48,13 +41,13 @@
 
   To connect to the server:
   ```
-  $ telnet localhost 15099
+  $ nc localhost 15099
   ```
 
   Then type away, and enjoy the echo chamber ;-)"
   [& [port & args]]
   (println "Starting server ...")
-  (let [server (new ServerSocket (get-port port))
+  (let [server (new ServerSocket (common/get-port port))
         sock (.accept server)]
     (println (format "Listening on %s:%s ..."
                      (.getHostAddress (.getLocalAddress sock))
