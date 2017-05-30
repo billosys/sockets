@@ -9,6 +9,7 @@
     [examples.tcp.quote-server.server :as tcp-quote-server]
     [examples.udp.echo-server.client :as udp-echo-client]
     [examples.udp.quote-server.server :as udp-quote-server]
+    [sockets.datagram.socket :as datagram-socket]
     [trifl.java :refer [show-methods]]))
 
 (defn run
