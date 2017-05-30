@@ -1,4 +1,4 @@
-(defproject systems.billo/sockets "0.1.0-SNAPSHOT"
+(defproject systems.billo/sockets "0.1.0"
   :description "A Clojure wrapper for the family of Java Socket classes"
   :url "https://github.com/billosys/sockets"
   :license {
