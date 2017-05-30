@@ -23,8 +23,7 @@
 (defn get-response
   [sock]
   (let [buf-len max-quote-size
-        buf (byte-array buf-len)
-        pkt (packet/create buf buf-len)]
+        pkt (packet/create buf-len)]
     (socket/receive sock pkt)
     (println (str "\n" (common/bytes->str (packet/data pkt))))))
 
