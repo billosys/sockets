@@ -8,7 +8,7 @@
 
 (defprotocol Socket
   (bind [this addr]
-    "Binds this DatagramSocket to a specific address and port.")
+    "Binds this `DatagramSocket` to a specific address and port.")
   (close [this]
     "Closes this datagram socket.")
   (connect [this addr] [this addr port]
@@ -20,7 +20,7 @@
   (disconnect [this]
     "Disconnects the socket.")
   (broadcast? [this]
-    "Tests if SO_BROADCAST is enabled.")
+    "Tests if `SO_BROADCAST` is enabled.")
   (channel [this]
     "Returns the unique `DatagramChannel` object associated with this datagram
     socket, if any.")
