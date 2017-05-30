@@ -1,1 +1,0 @@
-(ns quote-server.client)
