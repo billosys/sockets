@@ -19,8 +19,7 @@
   [sock]
   (let [in (async/chan)
         buf-len 4096
-        buf (byte-array buf-len)
-        pkt (packet/create buf buf-len)]
+        pkt (packet/create buf-len)]
     (async/go-loop []
       (do
         (socket/receive sock pkt)

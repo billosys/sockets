@@ -64,9 +64,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn create
-  "A constructor for datagram packets. This function my take 2, 3, 4, or 5
+  "A constructor for datagram packets. This function my take 1, 2, 3, 4, or 5
   args.
 
+  * 1-arity - This is a Clojure-only convenience constructor that creates a
+    `byte-array` of the desired length, suitable for receiving packets.
   * 2-arity - Constructs a `DatagramPacket` for receiving packets of length
     `len`.
   * 3-arity - Either of:
@@ -82,6 +84,8 @@
   * 5-arity - Constructs a datagram packet for sending packets of length
     `len` with offset `offset` to the specified port `port` on the specified
     host (`InetAddress`) `addr`."
+  ([len]
+    (new DatagramPacket (byte-array len) len))
   ([buf len]
     (new DatagramPacket buf len))
   ([buf arg2 arg3]
