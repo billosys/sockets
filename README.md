@@ -6,15 +6,21 @@
 *A Clojure wrapper for the family of Java Socket classes*
 
 
-## Documentation
+#### Contents
+
+* [Documentation](#documentation-)
+* [Examples](#examples-)
+* [Usage](#usage-)
+* [License](#license-)
+
+
+## Documentation [&#x219F;](#contents)
 
 * [Source code, docstrings, and code comments](http://billo.systems/sockets/current/marginalia) - published using [Marginalia](https://github.com/gdeer81/marginalia)
 * [API Reference Docs](http://billo.systems/sockets/current/index) - published using [Codox](https://github.com/weavejester/codox)
 
 
-## Examples
-
-### Running Them
+## Examples [&#x219F;](#contents)
 
 For running examples, be sure to look in the `examples` directory. The servers
 can be run with the following:
@@ -39,9 +45,11 @@ In addition, the quote server example has a client:
 $ lein run -m examples.udp.quote-server.client
 ```
 
-### Example Code
 
-The following was taken from the examples mentioned above.
+## Usage [&#x219F;](#contents)
+
+The following were taken from the examples mentioned above; for the full
+context, please see that code.
 
 
 Creating a datagram socket:
@@ -70,7 +78,8 @@ Using the update methods with a threading macro:
                  (packet/update-port port)))
 ```
 
-## License
+
+## License [&#x219F;](#contents)
 
 Copyright © 2017 BilloSystems, Ltd. Co.
 
