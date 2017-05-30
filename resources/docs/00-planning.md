@@ -56,23 +56,91 @@
 
 ### Clojure Sketch
 
-**A pre-implementation imagining of creating UDP servers and clients**
+**A pre-implementation imagining of creating UDP servers**
 
 ```clj
-(ns socket-server
+(ns examples.udp.echo-server.server
   (:require
-    [systems.billo.datagram.socket :as socket]
-    [systems.billo.datagram.packet :as packet]))
+    [clojure.core.async :as async]
+    [clojure.java.io :as io]
+    [inet.address :as inet]
+    [sockets.datagram.packet :as packet]
+    [sockets.datagram.socket :as socket]))
 
-(let [skt (socket/create 4445)]
+(def max-packet-size 4096)
+(def default-port 15099)
 
-  ...
-  (let [pkt (socket/receive skt)
-        remote-address (packet/address pkt)
-        remote-port (packet/port pkt)
-        pkt (packet/new buf (.lenth buf) remote-address remote-port)]
-    (socket/send skt pkt)))
+(defn str->bytes
+  [text]
+  (byte-array (map byte text)))
 
+(defn bytes->str
+  [data]
+  (new String data))
+
+(defn get-port
+  [port]
+  (case port
+    nil default-port
+    (Integer/parseInt port)))
+
+(defn echo-service
+  "For any in-coming message, simply return the same data."
+  [in out]
+  (async/go-loop []
+    (let [dest (async/<! in)]
+      (async/>! out dest)
+      (recur))))
+
+(defn packet-reader
+  [sock]
+  (let [in (async/chan)]
+    (async/go-loop []
+      (let [pkt (socket/receive sock max-packet-size)]
+        (async/>! in {:remote-addr (packet/address pkt)
+                      :remote-port (packet/port pkt)
+                      :data (bytes->str (packet/data pkt))}))
+      (recur))
+    in))
+
+(defn echo-writer
+  [sock]
+  (let [out (async/chan)]
+    (async/go-loop []
+      (let [msg (async/<! out)
+            pkt-text (format "Echoing: %s\n" (:data msg))
+            pkt-data (str->bytes pkt-text)
+            pkt (packet/create pkt-data
+                               (count pkt-data)
+                               (:remote-addr msg)
+                               (:remote-port msg))]
+        (socket/send sock pkt))
+      (recur))
+    out))
+
+(defn -main
+  "You can start the server like this:
+  ```
+  $ lein run -m examples.udp.echo-server.server
+  ```
+
+  To connect to the server:
+  ```
+  $ nc -u localhost 15099
+  ```
+
+  Then type away, and enjoy the endless echo chamber ;-)"
+  [& [port & args]]
+  (println "Starting server ...")
+  (let [sock (socket/create (get-port port))]
+    (println (format "Listening on udp://%s:%s ..."
+                     (inet/host-address (socket/local-address sock))
+                     (socket/local-port sock)))
+    (async/go
+      (echo-service
+        (packet-reader sock)
+        (echo-writer sock)))
+    (.join (Thread/currentThread))))
 ```
 
 ## Second Iteration
