@@ -1,9 +1,14 @@
 (ns sockets.dev
   (:require
     [clojure.core.async :as async]
+    [clojure.java.io :as io]
     [clojure.java.shell :as shell]
+    [clojure.pprint :refer [pprint]]
     [clojure.tools.namespace.repl :as repl]
-    [quote-server.quotes :as quotes]
+    [examples.tcp.echo-server.server :as tcp-echo-server]
+    [examples.tcp.quote-server.server :as tcp-quote-server]
+    [examples.udp.echo-server.client :as udp-echo-client]
+    [examples.udp.quote-server.server :as udp-quote-server]
     [trifl.java :refer [show-methods]]))
 
 (defn run
