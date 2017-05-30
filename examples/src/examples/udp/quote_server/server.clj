@@ -43,7 +43,7 @@
 (defn -main
   "You can start the server like this:
   ```
-  $ lein run -m examples.tcp.quote-server.server
+  $ lein run -m examples.udp.quote-server.server
   ```
 
   To connect to the server:
