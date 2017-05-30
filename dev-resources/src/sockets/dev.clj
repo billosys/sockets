@@ -7,8 +7,10 @@
     [clojure.tools.namespace.repl :as repl]
     [examples.tcp.echo-server.server :as tcp-echo-server]
     [examples.tcp.quote-server.server :as tcp-quote-server]
-    [examples.udp.echo-server.client :as udp-echo-client]
+    [examples.udp.echo-server.server :as udp-echo-server]
+    [examples.udp.quote-server.client :as udp-quote-client]
     [examples.udp.quote-server.server :as udp-quote-server]
+    [sockets.datagram.packet :as datagram-packet]
     [sockets.datagram.socket :as datagram-socket]
     [trifl.java :refer [show-methods]]))
 
