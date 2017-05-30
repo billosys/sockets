@@ -70,7 +70,7 @@ Using the update methods with a threading macro:
 
 ```clj
 (require '[inet.address :as inet]
-         '[sockets.datagram.socket :as socket])
+         '[sockets.datagram.packet :as packet])
 
 (socket/send sock
              (-> (packet/create 1)
