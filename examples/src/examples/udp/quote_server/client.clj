@@ -1,24 +1,17 @@
 (ns examples.udp.quote-server.client
   (:require
-    [clojure.core.async :as async]
     [clojure.java.io :as io]
     [examples.common :as common]
     [inet.address :as inet]
     [sockets.datagram.packet :as packet]
     [sockets.datagram.socket :as socket]))
 
-(def max-quote-size 4096)
-
 (defn send-request
   [sock port]
-  (let [in (async/chan)
-        buf-len 1
-        buf (byte-array buf-len)
-        pkt (packet/create buf
-                           buf-len
-                           (inet/create [127 0 0 1])
-                           port)]
-    (socket/send sock pkt)))
+  (socket/send sock
+               (-> (packet/create 1)
+                   (packet/update-address (inet/create [127 0 0 1]))
+                   (packet/update-port port))))
 
 (defn get-response
   [sock]

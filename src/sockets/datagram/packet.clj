@@ -42,9 +42,27 @@
   (port! [this port]
     "Sets the port number on the remote host to which this datagram is being
     sent.")
-  (receive-buffer-size [this]
+  (socket-address! [this]
     "Sets the `SocketAddress` (usually IP address + port number) of the remote
-    host to which this datagram is being sent."))
+    host to which this datagram is being sent.")
+  (update-address [this addr]
+    "Updates the IP address of the machine to which this datagram is being
+    sent, returning the updated packet. This is provided as a convenience for
+    use in Clojure threading macros.")
+  (update-data [this bytes] [this bytes offset len]
+    "Updates the data buffer for this packet, returning the updated packet.
+    This is provided as a convenience for use in Clojure threading macros.")
+  (update-length [this len]
+    "Set the length for this packet, returning the updated packet. This is
+    provided as a convenience for use in Clojure threading macros.")
+  (update-port [this port]
+    "Sets the port number on the remote host to which this datagram is being
+    sent, returning the updated packet. This is provided as a convenience for
+    use in Clojure threading macros.")
+  (update-socket-address [this]
+    "Sets the `SocketAddress` (usually IP address + port number) of the remote
+    host to which this datagram is being sent, returning the updated packet.
+    This is provided as a convenience for use in Clojure threading macros."))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Implementation   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -65,7 +83,19 @@
                 (.setData this bytes offset len)))
    :length! (fn [this len] (.setLength this len))
    :port! (fn [this port] (.setPort this port))
-   :socket-address! (fn [this addr] (.setSocketAddress this addr))})
+   :socket-address! (fn [this addr] (.setSocketAddress this addr) this)
+   :update-address (fn [this addr] (.setAddress this addr) this)
+   :update-data (fn ([this bytes]
+                      (.setData this bytes)
+                      this)
+                    ([this bytes offset len]
+                      (.setData this bytes offset len)
+                      this))
+   :update-length (fn [this len] (.setLength this len) this)
+   :update-port (fn [this port] (.setPort this port) this)
+   :update-socket-address (fn [this addr]
+                             (.setSocketAddress this addr)
+                             this)})
 
 (extend DatagramPacket Packet behaviour)
 
