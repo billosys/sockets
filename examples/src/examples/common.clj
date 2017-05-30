@@ -2,6 +2,7 @@
   (:require
     [clojure.java.shell :as shell]))
 
+(def max-packet-size 4096)
 (def default-port 15099)
 
 (defn get-port

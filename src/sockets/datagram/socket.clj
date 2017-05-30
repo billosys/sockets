@@ -1,6 +1,10 @@
 (ns sockets.datagram.socket
+  (:require
+    [sockets.datagram.packet :as packet])
   (:refer-clojure :exclude [bound? send])
-  (:import (java.net DatagramSocket)))
+  (:import
+    (java.net DatagramPacket
+              DatagramSocket)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Protocol   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -56,8 +60,13 @@
     "Returns whether the socket is closed or not.")
   (connected? [this]
     "Returns the connection state of the socket.")
-  (receive [this packet]
-    "Receives a datagram packet from this socket.")
+  (receive [this] [this packet]
+    "Receives a datagram packet from this socket. Additionally, the Clojure
+    wrapper allows you to pass the packet size instead of the packet itself. If
+    this option is exercised, a packet of the indicated size will be created and
+    returned. Another Clojure wrapper convenience, the 1-arity version of this
+    function, will use the default packet size `DEFAULT_PACKET_SIZE` and create
+    a packet under the covers with that size.")
   (send [this packet]
     "Sends a datagram packet from this socket.")
   (broadcast! [this bool]
@@ -79,6 +88,24 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   Implementation   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmulti -receive
+  (fn ([arg1 & [arg2]]
+       (mapv type [arg1 arg2]))))
+
+(defmethod -receive [DatagramSocket DatagramPacket]
+  [this pkt]
+  (.receive this pkt))
+
+(defmethod -receive [DatagramSocket Number]
+  [this len]
+  (let [pkt (packet/create len)]
+    (-receive this pkt)
+    pkt))
+
+(defmethod -receive [DatagramSocket]
+  [this]
+  (-receive this packet/DEFAULT_PACKET_SIZE))
 
 (def behaviour
   {:bind (fn [this addr] (.bind this addr))
@@ -104,7 +131,7 @@
    :bound? (fn [this] (.isBound this))
    :closed? (fn [this] (.isClosed this))
    :connected? (fn [this] (.isConnected this))
-   :receive (fn [this packet] (.receive this packet))
+   :receive -receive
    :send (fn [this packet] (.send this packet))
    :broadcast! (fn [this bool] (.setBroadcast this bool))
    :receive-buffer-size! (fn [this size] (.setReceiveBufferSize this size))
