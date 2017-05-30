@@ -50,7 +50,7 @@
   (println "Starting server ...")
   (let [server (new ServerSocket (common/get-port port))
         sock (.accept server)]
-    (println (format "Listening on %s:%s ..."
+    (println (format "Listening on tcp://%s:%s ..."
                      (.getHostAddress (.getLocalAddress sock))
                      (.getLocalPort sock)))
     (async/go
