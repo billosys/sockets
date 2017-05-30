@@ -5,6 +5,14 @@
     [clojure.java.shell :as shell])
   (:import (java.net ServerSocket)))
 
+(def default-port 15099)
+
+(defn get-port
+  [port]
+  (case port
+    nil default-port
+    (Integer/parseInt port)))
+
 (defn quote-service
   "For any in-coming message, simply ignore it and respond with a quote."
   [in out]
@@ -13,28 +21,23 @@
       (async/>! out (:out (shell/sh "fortune")))
       (recur))))
 
-(defn loop-socket-reader
+(defn line-reader
   [sock]
-  (let [in (async/chan)]
+  (let [in (async/chan)
+        reader (io/reader sock)]
     (async/go-loop []
-      (do
-        (->> sock
-             (io/reader)
-             (.readLine)
-             (async/>! in)))
+      (let [msg (.readLine reader)]
+        (async/>! in msg))
       (recur))
     in))
 
-(defn loop-socket-writer
+(defn quote-writer
   [sock]
   (let [out (async/chan)
         writer (io/writer sock)]
     (async/go-loop []
-      (do
-        (->> out
-             (async/<!)
-             (str "Your quote:\n\n")
-             (.write writer)))
+      (let [msg (async/<! out)]
+        (.write writer (format "Your quote:\n\n%s\n" msg)))
       (.flush writer)
       (recur))
     out))
@@ -51,13 +54,15 @@
   ```
 
   Then type away, and enjoy the echo chamber ;-)"
-  []
+  [& [port & args]]
   (println "Starting server ...")
-  (let [server (ServerSocket. 15099)
+  (let [server (new ServerSocket (get-port port))
         sock (.accept server)]
-    (println (format "Listening on socket %s ..." sock))
+    (println (format "Listening on %s:%s ..."
+                     (.getHostAddress (.getLocalAddress sock))
+                     (.getLocalPort sock)))
     (async/go
       (quote-service
-        (loop-socket-reader sock)
-        (loop-socket-writer sock)))
+        (line-reader sock)
+        (quote-writer sock)))
     (.join (Thread/currentThread))))
