@@ -1,4 +1,4 @@
-(ns systems.billo.test.datagram.socket
+(ns sockets.test.datagram.socket
   (:require [clojure.test :refer :all]
             [systems.billo.datagram.socket :as socket]))
 
