@@ -4,6 +4,14 @@
     [clojure.java.io :as io])
   (:import (java.net ServerSocket)))
 
+(def default-port 15099)
+
+(defn get-port
+  [port]
+  (case port
+    nil default-port
+    (Integer/parseInt port)))
+
 (defn echo-service
   [in out]
   (async/go-loop []
@@ -11,28 +19,23 @@
       (async/>! out msg)
       (recur))))
 
-(defn loop-socket-reader
+(defn line-reader
   [sock]
-  (let [in (async/chan)]
+  (let [in (async/chan)
+        reader (io/reader sock)]
     (async/go-loop []
-      (do
-        (->> sock
-             (io/reader)
-             (.readLine)
-             (async/>! in)))
+      (let [msg (.readLine reader)]
+        (async/>! in msg))
       (recur))
     in))
 
-(defn loop-socket-writer
+(defn echo-writer
   [sock]
   (let [out (async/chan)
         writer (io/writer sock)]
     (async/go-loop []
-      (do
-        (->> out
-             (async/<!)
-             (str "Echoing: ")
-             (.write writer)))
+      (let [msg (async/<! out)]
+        (.write writer (format "Echoing: %s\n" msg)))
       (.flush writer)
       (recur))
     out))
@@ -45,17 +48,19 @@
 
   To connect to the server:
   ```
-  $ telnet localhost 12345
+  $ telnet localhost 15099
   ```
 
   Then type away, and enjoy the echo chamber ;-)"
-  []
+  [& [port & args]]
   (println "Starting server ...")
-  (let [server (ServerSocket. 12345)
+  (let [server (new ServerSocket (get-port port))
         sock (.accept server)]
-    (println (format "Listening on socket %s ..." sock))
+    (println (format "Listening on %s:%s ..."
+                     (.getHostAddress (.getLocalAddress sock))
+                     (.getLocalPort sock)))
     (async/go
       (echo-service
-        (loop-socket-reader sock)
-        (loop-socket-writer sock)))
+        (line-reader sock)
+        (echo-writer sock)))
     (.join (Thread/currentThread))))
