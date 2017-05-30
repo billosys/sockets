@@ -1,4 +1,5 @@
-(ns systems.billo.datagram.socket
+(ns sockets.datagram.socket
+  (:refer-clojure :exclude [bound? send])
   (:import (java.net DatagramSocket)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -110,7 +111,7 @@
    :reuse-address! (fn [this bool] (.setReuseAddress this bool))
    :send-buffer-size! (fn [this size] (.setSendBufferSize this size))
    :so-timeout! (fn [this timeout] (.setSoTimeout this timeout))
-   :traffic-class! (fn [this class-int] (.setTrafficClass this class-int))})
+   :traffic-class! (fn [this class-int] (.setTrafficClass this class-int))})
 
 (extend DatagramSocket Socket behaviour)
 
@@ -126,11 +127,12 @@
   * 1-arity: If the argument is an instance of the `DatagramSocketImpl` class,
     Creates an unbound datagram socket with the specified `DatagramSocketImpl`.
     If the argument is an integer, it is interpreted as a port, in which
-    caseC, datagram socket will be constructed and bound to the specified port
+    case, datagram socket will be constructed and bound to the specified port
     on the local host machine. If the argument is an instance of
     `SocketAddress`, the constructor creates a datagram socket, bound to the
     specified local socket address.
-  * 2-arity: Creates a datagram socket, bound to the specified local address."
+  * 2-arity: Creates a datagram socket, bound to the specified port and local
+    `InetAddress`."
   ([]
     (new DatagramSocket))
   ([arg]
