@@ -9,3 +9,4 @@ jdk:
 notifications:
   email:
       - bjorn@billo.systems
+      - dokkarr@billo.systems
