@@ -4,9 +4,8 @@
     [clojure.java.io :as io]
     [examples.common :as common]
     [inet.address :as inet]
-    [sockets.datagram.socket :as socket])
-  (:import (java.net DatagramPacket
-                     DatagramSocket)))
+    [sockets.datagram.packet :as packet]
+    [sockets.datagram.socket :as socket]))
 
 (defn echo-service
   "For any in-coming message, simply return the same data."
@@ -18,16 +17,16 @@
 
 (defn packet-reader
   [sock]
-  (let [buf-len 4096
+  (let [in (async/chan)
+        buf-len 4096
         buf (byte-array buf-len)
-        in (async/chan)
-        packet (new DatagramPacket buf buf-len)]
+        pkt (packet/create buf buf-len)]
     (async/go-loop []
       (do
-        (socket/receive sock packet)
-        (async/>! in {:remote-addr (.getAddress packet)
-                      :remote-port (.getPort packet)
-                      :data (common/bytes->str (.getData packet))}))
+        (socket/receive sock pkt)
+        (async/>! in {:remote-addr (packet/address pkt)
+                      :remote-port (packet/port pkt)
+                      :data (common/bytes->str (packet/data pkt))}))
       (recur))
     in))
 
@@ -36,13 +35,13 @@
   (let [out (async/chan)]
     (async/go-loop []
       (let [msg (async/<! out)
-            packet-text (format "Echoing: %s\n" (:data msg))
-            packet-data (common/str->bytes packet-text)
-            packet (new DatagramPacket packet-data
-                                       (count packet-data)
-                                       (:remote-addr msg)
-                                       (:remote-port msg))]
-        (socket/send sock packet))
+            pkt-text (format "Echoing: %s\n" (:data msg))
+            pkt-data (common/str->bytes pkt-text)
+            pkt (packet/create pkt-data
+                               (count pkt-data)
+                               (:remote-addr msg)
+                               (:remote-port msg))]
+        (socket/send sock pkt))
       (recur))
     out))
 

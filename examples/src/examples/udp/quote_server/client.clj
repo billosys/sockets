@@ -4,28 +4,29 @@
     [clojure.java.io :as io]
     [examples.common :as common]
     [inet.address :as inet]
-    [sockets.datagram.socket :as socket])
-  (:import (java.net DatagramPacket
-                     DatagramSocket)))
+    [sockets.datagram.packet :as packet]
+    [sockets.datagram.socket :as socket]))
+
+(def max-quote-size 4096)
 
 (defn send-request
   [sock port]
-  (let [buf-len 1
+  (let [in (async/chan)
+        buf-len 1
         buf (byte-array buf-len)
-        in (async/chan)
-        packet (new DatagramPacket buf
-                                   buf-len
-                                   (inet/create [127 0 0 1])
-                                   port)]
-    (.send sock packet)))
+        pkt (packet/create buf
+                           buf-len
+                           (inet/create [127 0 0 1])
+                           port)]
+    (socket/send sock pkt)))
 
 (defn get-response
   [sock]
-  (let [buf-len 4096
+  (let [buf-len max-quote-size
         buf (byte-array buf-len)
-        packet (new DatagramPacket buf buf-len)]
-    (socket/receive sock packet)
-    (println (str "\n" (common/bytes->str (.getData packet))))))
+        pkt (packet/create buf buf-len)]
+    (socket/receive sock pkt)
+    (println (str "\n" (common/bytes->str (packet/data pkt))))))
 
 (defn -main
   "Before running the client, make sure the UDP quote server is running.
