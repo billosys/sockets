@@ -8,7 +8,7 @@
     [org.clojure/clojure "1.9.0"]
     [org.clojure/core.async "0.4.474"]
     [potemkin "0.4.5"]
-    [systems.billo/inet-address "0.1.0"]]
+    [systems.billo/inet-address "0.1.1"]]
   :profiles {
     :docs {
       :dependencies [

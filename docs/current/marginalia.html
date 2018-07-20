@@ -2866,132 +2866,7 @@ net.brehaut.ClojureTools = (function (SH) {
   };
 })(SyntaxHighlighter);
 </script><title>sockets -- Marginalia</title></head><body><table><tr><td class="docs"><div class="header"><h1 class="project-name"><a href="https://github.com/billosys/sockets">sockets</a></h1><h2 class="project-version">0.1.0</h2><br /><p>A Clojure wrapper for the family of Java Socket classes</p>
-</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.8.0</td></tr><tr><td class="dep-name">org.clojure/core.async</td><td class="dotted"><hr /></td><td class="dep-version">0.3.443</td></tr><tr><td class="dep-name">potemkin</td><td class="dotted"><hr /></td><td class="dep-version">0.4.3</td></tr><tr><td class="dep-name">systems.billo/inet-address</td><td class="dotted"><hr /></td><td class="dep-version">0.1.0</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left almost blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#sockets.datagram.packet">sockets.datagram.packet</a></li><li><a href="#sockets.datagram.socket">sockets.datagram.socket</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#sockets.datagram.packet" name="sockets.datagram.packet"><h1 class="project-name">sockets.datagram.packet</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(ns sockets.datagram.packet
-  (:refer-clojure :exclude [bound? send])
-  (:import (java.net DatagramPacket)))</pre></td></tr><tr><td class="docs"><p>  Constants   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
-</td><td class="codes"></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(def DEFAULT_PACKET_SIZE 512)</pre></td></tr><tr><td class="docs"><p>  Protocol   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
-</td><td class="codes"></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defprotocol Packet
-  (address [this]
-    &quot;Returns the IP address of the machine to which this datagram is being sent
-    or from which the datagram was received.&quot;)
-  (data [this]
-    &quot;Returns the data buffer.&quot;)
-  (default-length [this]
-    &quot;A Clojure method only available to the Clojure wrapper, returning the
-    default length a packet is created with when no length is given.&quot;)
-  (length [this]
-    &quot;Returns the length of the data to be sent or the length of the data
-    received.&quot;)
-  (offset [this]
-    &quot;Returns the offset of the data to be sent or the offset of the data
-    received.&quot;)
-  (port [this]
-    &quot;Returns the port number on the remote host to which this datagram is being
-    sent or from which the datagram was received.&quot;)
-  (socket-address [this]
-    &quot;Gets the SocketAddress (usually IP address + port number) of the remote
-    host that this packet is being sent to or is coming from.&quot;)
-  (address! [this addr]
-    &quot;Sets the IP address of the machine to which this datagram is being sent.&quot;)
-  (data! [this bytes] [this bytes offset len]
-    &quot;Set the data buffer for this packet.&quot;)
-  (length! [this len]
-    &quot;Set the length for this packet.&quot;)
-  (port! [this port]
-    &quot;Sets the port number on the remote host to which this datagram is being
-    sent.&quot;)
-  (socket-address! [this]
-    &quot;Sets the `SocketAddress` (usually IP address + port number) of the remote
-    host to which this datagram is being sent.&quot;)
-  (update-address [this addr]
-    &quot;Updates the IP address of the machine to which this datagram is being
-    sent, returning the updated packet. This is provided as a convenience for
-    use in Clojure threading macros.&quot;)
-  (update-data [this bytes] [this bytes offset len]
-    &quot;Updates the data buffer for this packet, returning the updated packet.
-    This is provided as a convenience for use in Clojure threading macros.&quot;)
-  (update-length [this len]
-    &quot;Set the length for this packet, returning the updated packet. This is
-    provided as a convenience for use in Clojure threading macros.&quot;)
-  (update-port [this port]
-    &quot;Sets the port number on the remote host to which this datagram is being
-    sent, returning the updated packet. This is provided as a convenience for
-    use in Clojure threading macros.&quot;)
-  (update-socket-address [this]
-    &quot;Sets the `SocketAddress` (usually IP address + port number) of the remote
-    host to which this datagram is being sent, returning the updated packet.
-    This is provided as a convenience for use in Clojure threading macros.&quot;))</pre></td></tr><tr><td class="docs"><p>  Implementation   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
-</td><td class="codes"></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(def behaviour
-  {:address (fn [this] (.getAddress this))
-   :data (fn [this] (.getData this))
-   :default-length (constantly DEFAULT_PACKET_SIZE)
-   :length (fn [this] (.getLength this))
-   :offset (fn [this] (.getOffset this))
-   :port (fn [this] (.getPort this))
-   :socket-address (fn [this] (.getSocketAddress this))
-   :address! (fn [this addr] (.setAddress this addr))
-   :data! (fn ([this bytes]
-                (.setData this bytes))
-              ([this bytes offset len]
-                (.setData this bytes offset len)))
-   :length! (fn [this len] (.setLength this len))
-   :port! (fn [this port] (.setPort this port))
-   :socket-address! (fn [this addr] (.setSocketAddress this addr) this)
-   :update-address (fn [this addr] (.setAddress this addr) this)
-   :update-data (fn ([this bytes]
-                      (.setData this bytes)
-                      this)
-                    ([this bytes offset len]
-                      (.setData this bytes offset len)
-                      this))
-   :update-length (fn [this len] (.setLength this len) this)
-   :update-port (fn [this port] (.setPort this port) this)
-   :update-socket-address (fn [this addr]
-                             (.setSocketAddress this addr)
-                             this)})</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(extend DatagramPacket Packet behaviour)</pre></td></tr><tr><td class="docs"><p>  Constructors   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
-</td><td class="codes"></td></tr><tr><td class="docs"><p>A constructor for datagram packets. This function may take 0, 1, 2, 3, 4, or
-  5 args.</p>
-
-<ul>
-<li>0-arity - This is a Clojure-only convenience constructor that creates a
-<code>byte-array</code> of length <code>DEFAULT_PACKET_SIZE</code>, suitable for receiving
-packets.</li>
-<li>1-arity - This is a Clojure-only convenience constructor that creates a
-<code>byte-array</code> of the desired length, suitable for receiving packets.</li>
-<li>2-arity - Constructs a <code>DatagramPacket</code> for receiving packets of length
-<code>len</code>.</li>
-<li>3-arity - Either of:
-<ul><li>Constructs a <code>DatagramPacket</code> for receiving packets of length <code>arg3</code>,
-specifying an offset of <code>arg2</code> into the buffer;</li>
-<li>Constructs a datagram packet for sending packets of length <code>arg2</code>
-to the specified <code>SocketAddress</code> of <code>arg3</code>.</li></ul></li>
-<li>4-arity - Either of:
-<ul><li>Constructs a datagram packet for sending packets of length <code>arg2</code>
-to port <code>arg4</code> on the specified host (<code>InetAddress</code>) <code>arg3</code>.</li>
-<li>Constructs a datagram packet for sending packets of length <code>arg3</code>
-with offset <code>arg2</code> to the specified <code>SocketAddress</code> of <code>arg4</code>.</li></ul></li>
-<li>5-arity - Constructs a datagram packet for sending packets of length
-<code>len</code> with offset <code>offset</code> to the specified port <code>port</code> on the specified
-host (<code>InetAddress</code>) <code>addr</code>.</li>
-</ul>
-</td><td class="codes"><pre class="brush: clojure">(defn create
-  ([]
-    (new DatagramPacket (byte-array DEFAULT_PACKET_SIZE) DEFAULT_PACKET_SIZE))
-  ([len]
-    (new DatagramPacket (byte-array len) len))
-  ([buf len]
-    (new DatagramPacket buf len))
-  ([buf arg2 arg3]
-    (new DatagramPacket buf arg2 arg3))
-  ([buf arg2 arg3 arg4]
-    (new DatagramPacket buf arg2 arg3 arg4))
-  ([buf offset len addr port]
-    (new DatagramPacket buf offset len addr port)))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#sockets.datagram.socket" name="sockets.datagram.socket"><h1 class="project-name">sockets.datagram.socket</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.9.0</td></tr><tr><td class="dep-name">org.clojure/core.async</td><td class="dotted"><hr /></td><td class="dep-version">0.4.474</td></tr><tr><td class="dep-name">potemkin</td><td class="dotted"><hr /></td><td class="dep-version">0.4.5</td></tr><tr><td class="dep-name">systems.billo/inet-address</td><td class="dotted"><hr /></td><td class="dep-version">0.1.0</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left almost blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#sockets.datagram.socket">sockets.datagram.socket</a></li><li><a href="#sockets.datagram.packet">sockets.datagram.packet</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#sockets.datagram.socket" name="sockets.datagram.socket"><h1 class="project-name">sockets.datagram.socket</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(ns sockets.datagram.socket
   (:require
     [sockets.datagram.packet :as packet])
@@ -3143,7 +3018,132 @@ specified local socket address.</li>
   ([arg]
     (new DatagramSocket arg))
   ([port local-addr]
-    (new DatagramSocket port local-addr)))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr></table><div class="footer">Generated by <a href="https://github.com/gdeer81/marginalia">Marginalia</a>.&nbsp;&nbsp;Syntax highlighting provided by Alex Gorbatchev's <a href="http://alexgorbatchev.com/SyntaxHighlighter/">SyntaxHighlighter</a><div id="floating-toc"><ul><li class="floating-toc-li" id="floating-toc_sockets.datagram.packet">sockets.datagram.packet</li><li class="floating-toc-li" id="floating-toc_sockets.datagram.socket">sockets.datagram.socket</li></ul></div></div><script type="text/javascript">SyntaxHighlighter.defaults['gutter'] = false;
+    (new DatagramSocket port local-addr)))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#sockets.datagram.packet" name="sockets.datagram.packet"><h1 class="project-name">sockets.datagram.packet</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(ns sockets.datagram.packet
+  (:refer-clojure :exclude [bound? send])
+  (:import (java.net DatagramPacket)))</pre></td></tr><tr><td class="docs"><p>  Constants   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
+</td><td class="codes"></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(def DEFAULT_PACKET_SIZE 512)</pre></td></tr><tr><td class="docs"><p>  Protocol   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
+</td><td class="codes"></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defprotocol Packet
+  (address [this]
+    &quot;Returns the IP address of the machine to which this datagram is being sent
+    or from which the datagram was received.&quot;)
+  (data [this]
+    &quot;Returns the data buffer.&quot;)
+  (default-length [this]
+    &quot;A Clojure method only available to the Clojure wrapper, returning the
+    default length a packet is created with when no length is given.&quot;)
+  (length [this]
+    &quot;Returns the length of the data to be sent or the length of the data
+    received.&quot;)
+  (offset [this]
+    &quot;Returns the offset of the data to be sent or the offset of the data
+    received.&quot;)
+  (port [this]
+    &quot;Returns the port number on the remote host to which this datagram is being
+    sent or from which the datagram was received.&quot;)
+  (socket-address [this]
+    &quot;Gets the SocketAddress (usually IP address + port number) of the remote
+    host that this packet is being sent to or is coming from.&quot;)
+  (address! [this addr]
+    &quot;Sets the IP address of the machine to which this datagram is being sent.&quot;)
+  (data! [this bytes] [this bytes offset len]
+    &quot;Set the data buffer for this packet.&quot;)
+  (length! [this len]
+    &quot;Set the length for this packet.&quot;)
+  (port! [this port]
+    &quot;Sets the port number on the remote host to which this datagram is being
+    sent.&quot;)
+  (socket-address! [this]
+    &quot;Sets the `SocketAddress` (usually IP address + port number) of the remote
+    host to which this datagram is being sent.&quot;)
+  (update-address [this addr]
+    &quot;Updates the IP address of the machine to which this datagram is being
+    sent, returning the updated packet. This is provided as a convenience for
+    use in Clojure threading macros.&quot;)
+  (update-data [this bytes] [this bytes offset len]
+    &quot;Updates the data buffer for this packet, returning the updated packet.
+    This is provided as a convenience for use in Clojure threading macros.&quot;)
+  (update-length [this len]
+    &quot;Set the length for this packet, returning the updated packet. This is
+    provided as a convenience for use in Clojure threading macros.&quot;)
+  (update-port [this port]
+    &quot;Sets the port number on the remote host to which this datagram is being
+    sent, returning the updated packet. This is provided as a convenience for
+    use in Clojure threading macros.&quot;)
+  (update-socket-address [this]
+    &quot;Sets the `SocketAddress` (usually IP address + port number) of the remote
+    host to which this datagram is being sent, returning the updated packet.
+    This is provided as a convenience for use in Clojure threading macros.&quot;))</pre></td></tr><tr><td class="docs"><p>  Implementation   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
+</td><td class="codes"></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(def behaviour
+  {:address (fn [this] (.getAddress this))
+   :data (fn [this] (.getData this))
+   :default-length (constantly DEFAULT_PACKET_SIZE)
+   :length (fn [this] (.getLength this))
+   :offset (fn [this] (.getOffset this))
+   :port (fn [this] (.getPort this))
+   :socket-address (fn [this] (.getSocketAddress this))
+   :address! (fn [this addr] (.setAddress this addr))
+   :data! (fn ([this bytes]
+                (.setData this bytes))
+              ([this bytes offset len]
+                (.setData this bytes offset len)))
+   :length! (fn [this len] (.setLength this len))
+   :port! (fn [this port] (.setPort this port))
+   :socket-address! (fn [this addr] (.setSocketAddress this addr) this)
+   :update-address (fn [this addr] (.setAddress this addr) this)
+   :update-data (fn ([this bytes]
+                      (.setData this bytes)
+                      this)
+                    ([this bytes offset len]
+                      (.setData this bytes offset len)
+                      this))
+   :update-length (fn [this len] (.setLength this len) this)
+   :update-port (fn [this port] (.setPort this port) this)
+   :update-socket-address (fn [this addr]
+                             (.setSocketAddress this addr)
+                             this)})</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(extend DatagramPacket Packet behaviour)</pre></td></tr><tr><td class="docs"><p>  Constructors   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</p>
+</td><td class="codes"></td></tr><tr><td class="docs"><p>A constructor for datagram packets. This function may take 0, 1, 2, 3, 4, or
+  5 args.</p>
+
+<ul>
+<li>0-arity - This is a Clojure-only convenience constructor that creates a
+<code>byte-array</code> of length <code>DEFAULT_PACKET_SIZE</code>, suitable for receiving
+packets.</li>
+<li>1-arity - This is a Clojure-only convenience constructor that creates a
+<code>byte-array</code> of the desired length, suitable for receiving packets.</li>
+<li>2-arity - Constructs a <code>DatagramPacket</code> for receiving packets of length
+<code>len</code>.</li>
+<li>3-arity - Either of:
+<ul><li>Constructs a <code>DatagramPacket</code> for receiving packets of length <code>arg3</code>,
+specifying an offset of <code>arg2</code> into the buffer;</li>
+<li>Constructs a datagram packet for sending packets of length <code>arg2</code>
+to the specified <code>SocketAddress</code> of <code>arg3</code>.</li></ul></li>
+<li>4-arity - Either of:
+<ul><li>Constructs a datagram packet for sending packets of length <code>arg2</code>
+to port <code>arg4</code> on the specified host (<code>InetAddress</code>) <code>arg3</code>.</li>
+<li>Constructs a datagram packet for sending packets of length <code>arg3</code>
+with offset <code>arg2</code> to the specified <code>SocketAddress</code> of <code>arg4</code>.</li></ul></li>
+<li>5-arity - Constructs a datagram packet for sending packets of length
+<code>len</code> with offset <code>offset</code> to the specified port <code>port</code> on the specified
+host (<code>InetAddress</code>) <code>addr</code>.</li>
+</ul>
+</td><td class="codes"><pre class="brush: clojure">(defn create
+  ([]
+    (new DatagramPacket (byte-array DEFAULT_PACKET_SIZE) DEFAULT_PACKET_SIZE))
+  ([len]
+    (new DatagramPacket (byte-array len) len))
+  ([buf len]
+    (new DatagramPacket buf len))
+  ([buf arg2 arg3]
+    (new DatagramPacket buf arg2 arg3))
+  ([buf arg2 arg3 arg4]
+    (new DatagramPacket buf arg2 arg3 arg4))
+  ([buf offset len addr port]
+    (new DatagramPacket buf offset len addr port)))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr></table><div class="footer">Generated by <a href="https://github.com/gdeer81/marginalia">Marginalia</a>.&nbsp;&nbsp;Syntax highlighting provided by Alex Gorbatchev's <a href="http://alexgorbatchev.com/SyntaxHighlighter/">SyntaxHighlighter</a><div id="floating-toc"><ul><li class="floating-toc-li" id="floating-toc_sockets.datagram.socket">sockets.datagram.socket</li><li class="floating-toc-li" id="floating-toc_sockets.datagram.packet">sockets.datagram.packet</li></ul></div></div><script type="text/javascript">SyntaxHighlighter.defaults['gutter'] = false;
 SyntaxHighlighter.all();
 
 // hackity hack
