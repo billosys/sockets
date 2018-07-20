@@ -5,17 +5,17 @@
     :name "Eclipse Public License"
     :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [
-    [org.clojure/clojure "1.8.0"]
-    [org.clojure/core.async "0.3.443"]
-    [potemkin "0.4.3"]
+    [org.clojure/clojure "1.9.0"]
+    [org.clojure/core.async "0.4.474"]
+    [potemkin "0.4.5"]
     [systems.billo/inet-address "0.1.0"]]
   :profiles {
     :docs {
       :dependencies [
         [systems.billo/superhero-codox-theme "0.3.0"]]
       :plugins [
-        [lein-codox "0.10.3"]
-        [lein-marginalia "0.9.0"]]
+        [lein-codox "0.10.4"]
+        [lein-marginalia "0.9.1"]]
       :source-paths ^:replace ["src"]
       :codox {
         :project {:name "sockets"}
@@ -25,7 +25,7 @@
         :metadata {:doc/format :markdown}}}
     :dev {
       :dependencies [
-        [clojusc/trifl "0.1.0"]
+        [clojusc/trifl "0.3.0"]
         [org.clojure/tools.namespace "0.2.11"]]
       :source-paths [
         "dev-resources/src"
@@ -41,9 +41,9 @@
                     (println (slurp "resources/text/loading.txt")))}}
     :test {
       :plugins [
-        [jonase/eastwood "0.2.3" :exclusions [org.clojure/clojure]]
-        [lein-kibit "0.1.5" :exclusions [org.clojure/clojure]]
-        [lein-ancient "0.6.10"]]}}
+        [jonase/eastwood "0.2.8" :exclusions [org.clojure/clojure]]
+        [lein-kibit "0.1.6" :exclusions [org.clojure/clojure]]
+        [lein-ancient "0.6.15"]]}}
   :aliases {
     "check-deps" ["with-profile" "+test" "ancient" "check" "all"]
     "lint" ["with-profile" "+test" "kibit"]
